@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  ecu:
+    build:
+      context: .
+      dockerfile: ecu/Dockerfile
+    volumes:
+      - /tmp:/tmp
+      - ./shared:/shared
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/dbus.sock
+    command: >
+      sh -c "mkdir -p /etc/dbus-1/session.d &&
+      cp /shared/dbus-session.conf /etc/dbus-1/session.d/ &&
+      dbus-daemon --config-file=/etc/dbus-1/session.d/dbus-session.conf --nofork --print-address=1 > /tmp/dbus.address &
+      sleep 1 &&
+      python3 /app/ecu.py"
+
+  validation:
+    build:
+      context: .
+      dockerfile: validation/Dockerfile
+    volumes:
+      - /tmp:/tmp
+      - ./shared:/shared
+    depends_on:
+      - ecu
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/dbus.sock
+    command: >
+      sh -c "mkdir -p /etc/dbus-1/session.d &&
+      cp /shared/dbus-session.conf /etc/dbus-1/session.d/ &&
+      sleep 2 &&
+      python3 /app/validation.py"
