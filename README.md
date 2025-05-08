@@ -11,7 +11,7 @@ This project simulates a Mercedes-Benz style **Engine ECU** and **Validation Ser
 car-sim/
 ├── docker-compose.yml
 ├── shared/                                   # Shared simulated D-Bus socket
-    ├──dbus-session.conf                             
+│   ├── dbus-session.conf                             
 ├── engine-ecu/
 │   ├── Dockerfile
 │   ├── ecu_service.py
