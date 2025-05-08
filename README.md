@@ -16,11 +16,13 @@ car-sim/
 │   ├── ecu_service.py
 │   ├── requirements.txt
 │   └── entrypoint.sh
-└── validator/
-    ├── Dockerfile
-    ├── validator.py
-    ├── requirements.txt
-    └── entrypoint.sh
+|── validator/
+|   ├── Dockerfile
+|   ├── validator.py
+|   ├── requirements.txt
+|   └── entrypoint.sh
+├── shared/
+    ├──dbus-session.conf
 ```
 
 ---
