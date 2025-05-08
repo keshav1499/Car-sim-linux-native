@@ -10,19 +10,18 @@ This project simulates a Mercedes-Benz style **Engine ECU** and **Validation Ser
 ```
 car-sim/
 ├── docker-compose.yml
-├── dbus/                             # Shared simulated D-Bus socket
+├── shared/                                   # Shared simulated D-Bus socket
+    ├──dbus-session.conf                             
 ├── engine-ecu/
 │   ├── Dockerfile
 │   ├── ecu_service.py
 │   ├── requirements.txt
 │   └── entrypoint.sh
 |── validator/
-|   ├── Dockerfile
-|   ├── validator.py
-|   ├── requirements.txt
-|   └── entrypoint.sh
-├── shared/
-    ├──dbus-session.conf
+│   ├── Dockerfile
+│   ├── validator.py
+│   ├── requirements.txt
+│   └── entrypoint.sh
 ```
 
 ---
