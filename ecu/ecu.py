@@ -4,15 +4,14 @@ from dbus_next import Variant
 import asyncio
 import random
 import os
-import time
 
 class EngineECUService:
     def __init__(self):
         self.engine_data = {
-            'rpm': Variant('i', 0),  # 'i' for int32
+            'rpm': Variant('i', 0),
             'speed': Variant('i', 0),
             'coolant_temp': Variant('i', 0),
-            'oil_pressure': Variant('d', 0.0),  # 'd' for double
+            'oil_pressure': Variant('d', 0.0),
             'throttle_position': Variant('d', 0.0)
         }
 
@@ -33,35 +32,31 @@ class EngineInterface(ServiceInterface):
         self.engine_service = engine_service
 
     @method()
-    def get_engine_data(self) -> 'a{sv}':  # Dictionary of string:variant
+    def get_engine_data(self) -> 'a{sv}':
         return self.engine_service.engine_data
 
     @method()
-    def get_parameter(self, param: 's') -> 'v':  # Takes string, returns variant
+    def get_parameter(self, param: 's') -> 'v':
         return self.engine_service.engine_data.get(param, Variant('i', 0))
 
 async def main():
     engine_service = EngineECUService()
-    
-    # Wait for DBus socket to be ready
-    while not os.path.exists('/tmp/dbus.sock'):
-        print("Waiting for DBus socket...")
-        await asyncio.sleep(0.5)
-        
+
     print("Connecting to DBus...")
-    bus = await MessageBus().connect()
-    await bus.request_name('com.mercedes.engine')
-    
-    # Create and export the interface
+
+    try:
+        bus = await MessageBus().connect()
+        await bus.request_name('com.mercedes.engine')
+    except Exception as e:
+        print(f"Failed to connect to DBus: {e}")
+        return
+
     interface = EngineInterface(engine_service)
     bus.export('/com/mercedes/engine', interface)
-    
+
     print("ECU service started successfully!")
-    
-    # Start the data update task
+
     asyncio.create_task(engine_service.update_data())
-    
-    # Keep the service running
     await asyncio.Event().wait()
 
 if __name__ == "__main__":
@@ -70,3 +65,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ECU service failed: {e}")
         raise
+
