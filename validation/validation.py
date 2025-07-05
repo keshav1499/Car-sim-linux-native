@@ -1,17 +1,27 @@
 from dbus_next.aio import MessageBus
+from signal_definitions import SIGNAL_DEFS
 import asyncio
 
-async def main():
-    print("Validation service starting...")
+def decode_can_frame(frame_bytes):
+    data = {}
+    for signal, meta in SIGNAL_DEFS.items():
+        idx = meta['start_bit'] // 8
+        if meta['bit_length'] == 8:
+            raw = frame_bytes[idx]
+        elif meta['bit_length'] == 16:
+            raw = frame_bytes[idx] | (frame_bytes[idx + 1] << 8)
+        value = raw * meta['scale'] + meta['offset']
+        data[signal] = round(value, 1)
+    return data
 
-    print("Connecting to DBus...")
+async def main():
+    print("Validation service starting...\nConnecting to DBus...")
     try:
         bus = await MessageBus().connect()
     except Exception as e:
         print(f"Failed to connect to DBus: {e}")
         return
 
-    # Try to connect to ECU service
     retries = 0
     ecu_interface = None
     while retries < 10:
@@ -29,38 +39,28 @@ async def main():
     if not ecu_interface:
         raise Exception("Could not connect to ECU service after 10 attempts")
 
-    print("Validation service running. Monitoring engine data...")
-
     while True:
         try:
-            data = await ecu_interface.call_get_engine_data()
+            frame_hex = await ecu_interface.call_get_engine_frame()
+            frame_bytes = bytes.fromhex(frame_hex)
+            data = decode_can_frame(frame_bytes)
 
-            # Extract values from Variants
-            rpm = data['rpm'].value
-            speed = data['speed'].value
-            coolant_temp = data['coolant_temp'].value
-            oil_pressure = data['oil_pressure'].value
-            throttle_position = data['throttle_position'].value
-
-            print("\n=== Engine Data ===")
+            print("\n=== Decoded Engine Data ===")
             print(f"{'Parameter':<20}{'Value':<10}{'Unit':<10}{'Status':<10}")
             print("-" * 50)
-            print(f"{'RPM':<20}{rpm:<10}{'rpm':<10}{'⚠️' if rpm > 6000 and speed < 50 else ''}")
-            print(f"{'Speed':<20}{speed:<10}{'km/h':<10}")
-            print(f"{'Coolant Temp':<20}{coolant_temp:<10}{'°C':<10}{'⚠️' if coolant_temp > 105 else ''}")
-            print(f"{'Oil Pressure':<20}{oil_pressure:<10.1f}{'bar':<10}{'⚠️' if oil_pressure < 1.5 or oil_pressure > 4.5 else ''}")
-            print(f"{'Throttle Pos':<20}{throttle_position:<10.1f}{'%':<10}{'⚠️' if throttle_position > 90 else ''}")
 
-            if rpm > 6000 and speed < 50:
-                print("WARNING: High RPM at low speed!")
-            if coolant_temp > 105:
-                print("WARNING: Coolant temperature too high!")
-            if oil_pressure < 1.5:
-                print("WARNING: Oil pressure too low!")
-            if oil_pressure > 4.5:
-                print("WARNING: Oil pressure too high!")
-            if throttle_position > 90:
-                print("WARNING: High throttle position!")
+            for param, value in data.items():
+                unit = SIGNAL_DEFS[param]['unit']
+                status = ''
+                if param == 'rpm' and value > 6000:
+                    status = '⚠️'
+                if param == 'coolant_temp' and value > 105:
+                    status = '⚠️'
+                if param == 'oil_pressure' and (value < 1.5 or value > 4.5):
+                    status = '⚠️'
+                if param == 'throttle_position' and value > 90:
+                    status = '⚠️'
+                print(f"{param.replace('_', ' ').title():<20}{value:<10}{unit:<10}{status:<10}")
 
             await asyncio.sleep(1)
         except Exception as e:
