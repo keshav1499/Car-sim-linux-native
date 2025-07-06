@@ -13,5 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy validation script and entrypoint
 COPY validation/validation.py .
 COPY validation/validator_entrypoint.sh .
+COPY shared /app/shared
 RUN chmod +x validator_entrypoint.sh
 

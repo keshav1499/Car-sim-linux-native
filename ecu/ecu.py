@@ -1,8 +1,13 @@
+#import os
+#print("Current contents of /shared:", os.listdir("/shared"))
+
+#import sys
+#sys.path.append("/shared")
+from shared.signal_definitions import SIGNAL_DEFS
 from dbus_next.aio import MessageBus
 from dbus_next.service import ServiceInterface, method
 import asyncio
 import random
-from signal_definitions import SIGNAL_DEFS
 
 class EngineInterface(ServiceInterface):
     def __init__(self):

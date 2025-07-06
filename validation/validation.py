@@ -1,5 +1,7 @@
+#import sys
+#sys.path.append("/shared")
+from shared.signal_definitions import SIGNAL_DEFS
 from dbus_next.aio import MessageBus
-from signal_definitions import SIGNAL_DEFS
 import asyncio
 
 def decode_can_frame(frame_bytes):
