@@ -33,7 +33,9 @@ This project reflects modern **service-oriented automotive software architecture
 car-sim/
 ├── docker-compose.yml
 ├── shared/                         # Shared D-Bus config
-│   └── dbus-session.conf
+│   |── dbus-session.conf
+|   |── __init__.py
+|   └── signal_definitions.py
 ├── docker-tmp/                     # Shared /tmp volume for dbus.sock
 ├── ecu/
 │   ├── ecu.py                      # ECU simulator
