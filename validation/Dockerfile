@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+ENV PYTHONPATH="/app"
+
 # Install Python dependencies
 COPY validation/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
