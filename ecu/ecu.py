@@ -1,4 +1,5 @@
 from shared.signal_definitions import SIGNAL_DEFS
+from shared.DTC_definitions import DTC_STORE
 from dbus_next.aio import MessageBus
 from dbus_next.service import ServiceInterface, method
 from dbus_next import Variant
@@ -9,7 +10,14 @@ import random
 class EngineInterface(ServiceInterface):
     def __init__(self):
         super().__init__('com.mercedes.engine')
+        self.active_dtcs = []
         self.frame_bytes = bytes(8)
+        
+    def check_dtcs(self, data):
+        self.active_dtcs.clear()
+        for code, info in DTC_STORE.items():
+            if info['trigger'](data):
+                self.active_dtcs.append(code)
 
     def encode_can_frame(self, data):
         # Calculate required frame size dynamically
@@ -44,12 +52,17 @@ class EngineInterface(ServiceInterface):
                 'fuel_level': round(random.uniform(0, 100), 1),
                 'battery_voltage': round(random.uniform(11.5, 14.8), 1)
             }
+            self.check_dtcs(data)
             self.frame_bytes = self.encode_can_frame(data)
             await asyncio.sleep(0.5)
 
     @method()
     def get_engine_frame(self) -> 's':
         return self.frame_bytes.hex()
+        
+    @method()
+    def get_active_dtcs(self) -> 'as':  # Array of strings
+        return self.active_dtcs    
 
 
 async def main():

@@ -1,6 +1,5 @@
-#import sys
-#sys.path.append("/shared")
 from shared.signal_definitions import SIGNAL_DEFS
+from shared.DTC_definitions import DTC_STORE
 from dbus_next.aio import MessageBus
 import asyncio
 
@@ -22,7 +21,6 @@ def decode_can_frame(frame_bytes):
         data[signal] = round(value, 1)
 
     return data
-
 
 async def main():
     print("Validation service starting...\nConnecting to DBus...")
@@ -72,11 +70,22 @@ async def main():
                     status = '⚠️'
                 if param == 'fuel_level' and value < 10:
                     status = '⚠️'
-                if param == 'battery_voltage' and value <12:
+                if param == 'battery_voltage' and value < 12:
                     status = '⚠️'
                 print(f"{param.replace('_', ' ').title():<20}{value:<10}{unit:<10}{status:<10}")
-                
+
+            # Fetch and print active DTCs
+            dtcs = await ecu_interface.call_get_active_dtcs()
+            if dtcs:
+                print("\n❗ ACTIVE DTCs ❗")
+                for code in dtcs:
+                    desc = DTC_STORE.get(code, {}).get('description', 'Unknown DTC')
+                    print(f"{code}: {desc}")
+            else:
+                print("\n✅ No active DTCs.")
+
             await asyncio.sleep(1)
+
         except Exception as e:
             print(f"Error during operation: {e}")
             await asyncio.sleep(1)
