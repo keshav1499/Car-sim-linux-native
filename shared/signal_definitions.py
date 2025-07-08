@@ -34,6 +34,21 @@ SIGNAL_DEFS = {
         'scale': 0.5,
         'offset': 0,
         'unit': '%',
+    },
+    'fuel_level': {
+        'start_bit': 48,
+        'bit_length': 8,
+        'scale': 0.5,
+        'offset': 0,
+        'unit': '%',
+    },
+    'battery_voltage': {
+        'start_bit': 56,
+        'bit_length': 8,
+        'scale': 0.1,
+        'offset': 0,
+        'unit': 'V',
     }
+    
 }
 

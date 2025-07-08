@@ -1,8 +1,3 @@
-#import os
-#print("Current contents of /shared:", os.listdir("/shared"))
-
-#import sys
-#sys.path.append("/shared")
 from shared.signal_definitions import SIGNAL_DEFS
 from dbus_next.aio import MessageBus
 from dbus_next.service import ServiceInterface, method
@@ -34,7 +29,9 @@ class EngineInterface(ServiceInterface):
                 'speed': random.randint(0, 250),
                 'coolant_temp': random.randint(70, 110),
                 'oil_pressure': round(random.uniform(1.5, 4.5), 1),
-                'throttle_position': round(random.uniform(0, 100), 1)
+                'throttle_position': round(random.uniform(0, 100), 1),
+                'fuel_level': Variant('d', round(random.uniform(0, 100), 1)),
+                'battery_voltage': Variant('d', round(random.uniform(11.5, 14.8), 1))
             }
             self.frame_bytes = self.encode_can_frame(data)
             await asyncio.sleep(0.5)
