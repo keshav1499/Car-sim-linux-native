@@ -6,15 +6,23 @@ import asyncio
 
 def decode_can_frame(frame_bytes):
     data = {}
+
     for signal, meta in SIGNAL_DEFS.items():
         idx = meta['start_bit'] // 8
-        if meta['bit_length'] == 8:
+        bit_len = meta['bit_length']
+
+        if bit_len == 8:
             raw = frame_bytes[idx]
-        elif meta['bit_length'] == 16:
+        elif bit_len == 16:
             raw = frame_bytes[idx] | (frame_bytes[idx + 1] << 8)
+        else:
+            raise NotImplementedError(f"Unsupported bit length: {bit_len} for signal {signal}")
+
         value = raw * meta['scale'] + meta['offset']
         data[signal] = round(value, 1)
+
     return data
+
 
 async def main():
     print("Validation service starting...\nConnecting to DBus...")
@@ -62,8 +70,12 @@ async def main():
                     status = '⚠️'
                 if param == 'throttle_position' and value > 90:
                     status = '⚠️'
+                if param == 'fuel_level' and value < 10:
+                    status = '⚠️'
+                if param == 'battery_voltage' and value <12:
+                    status = '⚠️'
                 print(f"{param.replace('_', ' ').title():<20}{value:<10}{unit:<10}{status:<10}")
-
+                
             await asyncio.sleep(1)
         except Exception as e:
             print(f"Error during operation: {e}")
