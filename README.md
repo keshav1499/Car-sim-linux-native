@@ -35,7 +35,8 @@ car-sim/
 ├── shared/                         # Shared D-Bus config
 │   |── dbus-session.conf
 |   |── __init__.py
-|   └── signal_definitions.py
+|   |── signal_definitions.py
+|   └── DTC_definitions.py
 ├── docker-tmp/                     # Shared /tmp volume for dbus.sock
 ├── ecu/
 │   ├── ecu.py                      # ECU simulator
