@@ -35,7 +35,8 @@ car-sim/
 ├── shared/                         # Shared D-Bus config
 │   |── dbus-session.conf
 |   |── __init__.py
-|   └── signal_definitions.py
+|   |── signal_definitions.py
+|   └── DTC_definitions.py
 ├── docker-tmp/                     # Shared /tmp volume for dbus.sock
 ├── ecu/
 │   ├── ecu.py                      # ECU simulator
@@ -95,11 +96,27 @@ sudo docker-compose up --build
 ## 📸 Example Output
 
 ```bash
-[ECU] Starting D-Bus session...
-[ECU] D-Bus session launched: unix:path=/tmp/dbus-XYZ
-[ECU] ECU service started successfully!
-[Validator] Using DBUS_SESSION_BUS_ADDRESS: unix:path=/tmp/dbus-XYZ
-[Validator] RPM: 3278 | Speed: 104 | Coolant: 98°C | Oil: 3.2 bar | Throttle: 78.5%
+Attaching to ecu-1, validation-1
+ecu-1         | [ECU] Starting D-Bus session...
+ecu-1         | [ECU] D-Bus session launched: unix:path=/tmp/dbus-eXXXXXXXXXXX,guid=fxxxxxxxxxxxxxxxxxxxx
+validation-1  | [Validator] Waiting for D-Bus address...
+validation-1  | [Validator] Using DBUS_SESSION_BUS_ADDRESS: unix:path=/tmp/dbus-eXXXXXXXXX,guid=xxxxxxxxxxxxxxxxxx
+validation-1  | Validation service starting...
+validation-1  | Connecting to DBus...
+validation-1  | Successfully connected to ECU service!
+validation-1  | 
+validation-1  | === Decoded Engine Data ===
+validation-1  | Parameter           Value     Unit      Status    
+validation-1  | --------------------------------------------------
+validation-1  | Rpm                 1555      rpm                 
+validation-1  | Speed               18        km/h                
+validation-1  | Coolant Temp        82        °C                  
+validation-1  | Oil Pressure        1.6       bar                 
+validation-1  | Throttle Position   7.0       %                   
+validation-1  | Fuel Level          45.5      %                   
+validation-1  | Battery Voltage     12.5      V
+validation-1  | 
+validation-1  | ✅ No active DTCs.
 ...
 ```
 
@@ -118,7 +135,7 @@ sudo docker-compose up --build
 
 ## 💡 Why Linux Native?
 
-This project benefits from a native Linux environment:
+This project runs perfect on a Fedora Linux environment:
 - Reliable Unix socket IPC (`/tmp/dbus.sock`)
 - Full D-Bus support (no hacks like WSLg or xvfb)
 - Better SELinux control for volume mounts
@@ -134,7 +151,7 @@ Pull requests and ideas are welcome — especially extensions to simulate more E
 
 ## 📜 License
 
-MIT — do whatever you want with it, just don't blame us if your engine explodes (virtually).
+MIT — do whatever you want with it, just don't blame me if your engine explodes (virtually).
 
 ---
 
