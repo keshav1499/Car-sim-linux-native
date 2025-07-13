@@ -2,50 +2,66 @@ from shared.signal_definitions import SIGNAL_DEFS
 from shared.DTC_definitions import DTC_STORE
 from dbus_next.aio import MessageBus
 import asyncio
+import argparse
+import json
+from datetime import datetime
+
+# List of supported ECU services and paths
+ECU_TARGETS = [
+    ('com.mercedes.engine', '/com/mercedes/engine'),
+    # Future ECUs can be added here
+]
+
+def log(msg, verbose=True):
+    if verbose:
+        print(f"[{datetime.now().isoformat()}] {msg}")
 
 def decode_can_frame(frame_bytes):
     data = {}
-
     for signal, meta in SIGNAL_DEFS.items():
-        idx = meta['start_bit'] // 8
-        bit_len = meta['bit_length']
+        try:
+            idx = meta['start_bit'] // 8
+            bit_len = meta['bit_length']
 
-        if bit_len == 8:
-            raw = frame_bytes[idx]
-        elif bit_len == 16:
-            raw = frame_bytes[idx] | (frame_bytes[idx + 1] << 8)
-        else:
-            raise NotImplementedError(f"Unsupported bit length: {bit_len} for signal {signal}")
+            if bit_len == 8:
+                raw = frame_bytes[idx]
+            elif bit_len == 16:
+                raw = frame_bytes[idx] | (frame_bytes[idx + 1] << 8)
+            else:
+                raise NotImplementedError(f"Unsupported bit length: {bit_len} for signal {signal}")
 
-        value = raw * meta['scale'] + meta['offset']
-        data[signal] = round(value, 1)
-
+            value = raw * meta['scale'] + meta['offset']
+            data[signal] = round(value, 1)
+        except Exception as e:
+            log(f"[⚠️ Decode Error] {signal}: {e}")
     return data
 
-async def main():
-    print("Validation service starting...\nConnecting to DBus...")
+async def connect_to_ecu(bus, verbose):
+    for name, path in ECU_TARGETS:
+        log(f"Trying ECU: {name} at {path}", verbose)
+        for retries in range(10):
+            try:
+                introspection = await bus.introspect(name, path)
+                ecu = bus.get_proxy_object(name, path, introspection)
+                ecu_interface = ecu.get_interface(name)
+                log(f"✅ Connected to {name}", verbose)
+                return ecu_interface, name
+            except Exception as e:
+                log(f"Retry {retries + 1} for {name} failed: {e}", verbose)
+                await asyncio.sleep(1)
+    return None, None
+
+async def main(verbose=False):
+    log("Validation service starting...\nConnecting to DBus...", verbose)
     try:
         bus = await MessageBus().connect()
     except Exception as e:
-        print(f"Failed to connect to DBus: {e}")
+        log(f"Failed to connect to DBus: {e}", verbose)
         return
 
-    retries = 0
-    ecu_interface = None
-    while retries < 10:
-        try:
-            introspection = await bus.introspect('com.mercedes.engine', '/com/mercedes/engine')
-            ecu = bus.get_proxy_object('com.mercedes.engine', '/com/mercedes/engine', introspection)
-            ecu_interface = ecu.get_interface('com.mercedes.engine')
-            print("Successfully connected to ECU service!")
-            break
-        except Exception as e:
-            print(f"Connection attempt {retries + 1} failed: {e}")
-            retries += 1
-            await asyncio.sleep(1)
-
+    ecu_interface, ecu_name = await connect_to_ecu(bus, verbose)
     if not ecu_interface:
-        raise Exception("Could not connect to ECU service after 10 attempts")
+        raise Exception("Could not connect to any known ECU")
 
     while True:
         try:
@@ -53,12 +69,16 @@ async def main():
             frame_bytes = bytes.fromhex(frame_hex)
             data = decode_can_frame(frame_bytes)
 
+            # Dump last good data for debugging
+            with open("last_valid_frame.json", "w") as f:
+                json.dump(data, f, indent=2)
+
             print("\n=== Decoded Engine Data ===")
             print(f"{'Parameter':<20}{'Value':<10}{'Unit':<10}{'Status':<10}")
             print("-" * 50)
 
             for param, value in data.items():
-                unit = SIGNAL_DEFS[param]['unit']
+                unit = SIGNAL_DEFS[param].get('unit', '')
                 status = ''
                 if param == 'rpm' and value > 6000:
                     status = '⚠️'
@@ -84,15 +104,25 @@ async def main():
             else:
                 print("\n✅ No active DTCs.")
 
+            print("HEALTHCHECK: OK")
+
             await asyncio.sleep(1)
 
         except Exception as e:
-            print(f"Error during operation: {e}")
-            await asyncio.sleep(1)
+            log(f"Error during operation: {e}", verbose)
+            log("Attempting to reconnect...", verbose)
+            ecu_interface, ecu_name = await connect_to_ecu(bus, verbose)
+            if not ecu_interface:
+                log("All ECUs offline. Retrying in 5s.", verbose)
+                await asyncio.sleep(5)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="ECU Frame Validator")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    args = parser.parse_args()
+
     try:
-        asyncio.run(main())
+        asyncio.run(main(verbose=args.verbose))
     except Exception as e:
         print(f"Validation service failed: {e}")
         raise
