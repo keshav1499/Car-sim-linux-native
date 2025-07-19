@@ -27,6 +27,9 @@ while [ ! -f /tmp/dbus.address ]; do
   sleep 0.2
 done
 
+# 🔔 Sound alert
+echo -e "\a"
+
 echo -e "\n${GREEN}✅ D-Bus address found!${NC}"
 
 export DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/dbus.address)
