@@ -6,10 +6,8 @@ import argparse
 import json
 from datetime import datetime
 
-# List of supported ECU services and paths
 ECU_TARGETS = [
     ('com.mercedes.engine', '/com/mercedes/engine'),
-    # Future ECUs can be added here
 ]
 
 def log(msg, verbose=True):
@@ -65,15 +63,15 @@ async def main(verbose=False):
 
     while True:
         try:
+            state = await ecu_interface.call_get_engine_state()
             frame_hex = await ecu_interface.call_get_engine_frame()
             frame_bytes = bytes.fromhex(frame_hex)
             data = decode_can_frame(frame_bytes)
 
-            # Dump last good data for debugging
             with open("last_valid_frame.json", "w") as f:
                 json.dump(data, f, indent=2)
 
-            print("\n=== Decoded Engine Data ===")
+            print(f"\n=== Engine State: {state} ===")
             print(f"{'Parameter':<20}{'Value':<10}{'Unit':<10}{'Status':<10}")
             print("-" * 50)
 
@@ -94,7 +92,6 @@ async def main(verbose=False):
                     status = '⚠️'
                 print(f"{param.replace('_', ' ').title():<20}{value:<10}{unit:<10}{status:<10}")
 
-            # Fetch and print active DTCs
             dtcs = await ecu_interface.call_get_active_dtcs()
             if dtcs:
                 print("\n❗ ACTIVE DTCs ❗")
