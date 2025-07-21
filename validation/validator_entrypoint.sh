@@ -28,7 +28,7 @@ while [ ! -f /tmp/dbus.address ]; do
 done
 
 # 🔔 Sound alert
-echo -e "\a"
+beep
 
 echo -e "\n${GREEN}✅ D-Bus address found!${NC}"
 
