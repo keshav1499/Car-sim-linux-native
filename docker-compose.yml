@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   ecu:
+    image: car-sim-linux-native-ecu
     build:
       context: .
       dockerfile: ecu/Dockerfile
@@ -12,6 +13,7 @@ services:
     command: ["/app/ecu_entrypoint.sh"]
 
   validation:
+    image: car-sim-linux-native-validation
     build:
       context: .
       dockerfile: validation/Dockerfile
