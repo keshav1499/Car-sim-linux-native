@@ -72,7 +72,8 @@ Make sure `shared/dbus-session.conf` exists (you can copy a standard D-Bus sessi
 
 ### 3. Run the simulator
 ```bash
-sudo docker-compose up --build
+sudo docker buildx bake
+sudo docker compose up
 ```
 
 > **Note:** Root privileges are required due to D-Bus and SELinux volume mounts.
