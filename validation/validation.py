@@ -50,7 +50,7 @@ async def connect_to_ecu(bus, verbose):
     return None, None
 
 async def main(verbose=False):
-    log("Validation service starting...\nConnecting to DBus...", verbose)
+    log("Validation service is starting...\nConnecting to DBus...", verbose)
     try:
         bus = await MessageBus().connect()
     except Exception as e:
