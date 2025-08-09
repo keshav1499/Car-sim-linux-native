@@ -94,7 +94,7 @@ async def main(verbose=False):
 
             dtcs = await ecu_interface.call_get_active_dtcs()
             if dtcs:
-                print("\n❗ ACTIVE DTCs ❗")
+                print("\n❗THERE ARE ACTIVE DTCs ❗")
                 for code in dtcs:
                     desc = DTC_STORE.get(code, {}).get('description', 'Unknown DTC')
                     print(f"{code}: {desc}")
