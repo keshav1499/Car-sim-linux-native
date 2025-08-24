@@ -1,5 +1,5 @@
-from shared.signal_definitions import SIGNAL_DEFS  # CAN signal definitions (start_bit, bit_length, scale, offset)
-from shared.DTC_definitions import DTC_STORE       # Diagnostic Trouble Code definitions and triggers
+from shared.signal_definitions.engine_signals import SIGNAL_DEFS  # CAN signal definitions (start_bit, bit_length, scale, offset)
+from shared.DTC_definitions.engine_dtcs import DTC_STORE       # Diagnostic Trouble Code definitions and triggers
 from dbus_next.aio import MessageBus               # Async DBus message bus
 from dbus_next.service import ServiceInterface, method  # DBus interface and method decorator
 from dbus_next import Variant

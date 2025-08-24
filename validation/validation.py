@@ -1,5 +1,5 @@
-from shared.signal_definitions import SIGNAL_DEFS
-from shared.DTC_definitions import DTC_STORE
+from shared.signal_definitions.engine_signals import SIGNAL_DEFS
+from shared.DTC_definitions.engine_dtcs import DTC_STORE
 from dbus_next.aio import MessageBus
 import asyncio
 import argparse
