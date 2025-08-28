@@ -115,27 +115,51 @@ sudo docker compose up
 ## 📸 Example Output
 
 ```bash
-Attaching to ecu-1, validation-1
-ecu-1         | [ECU] Starting D-Bus session...
-ecu-1         | [ECU] D-Bus session launched: unix:path=/tmp/dbus-eXXXXXXXXXXX,guid=fxxxxxxxxxxxxxxxxxxxx
-validation-1  | [Validator] Waiting for D-Bus address...
-validation-1  | [Validator] Using DBUS_SESSION_BUS_ADDRESS: unix:path=/tmp/dbus-eXXXXXXXXX,guid=xxxxxxxxxxxxxxxxxx
-validation-1  | Validation service starting...
-validation-1  | Connecting to DBus...
-validation-1  | Successfully connected to ECU service!
-validation-1  | 
-validation-1  | === Decoded Engine Data ===
-validation-1  | Parameter           Value     Unit      Status    
-validation-1  | --------------------------------------------------
-validation-1  | Rpm                 1555      rpm                 
-validation-1  | Speed               18        km/h                
-validation-1  | Coolant Temp        82        °C                  
-validation-1  | Oil Pressure        1.6       bar                 
-validation-1  | Throttle Position   7.0       %                   
-validation-1  | Fuel Level          45.5      %                   
-validation-1  | Battery Voltage     12.5      V
-validation-1  | 
-validation-1  | ✅ No active DTCs.
+docker compose up  
+[+] Running 3/3
+ ✔ Container car-sim-linux-native-infotainment-1  Created                                0.1s 
+ ✔ Container car-sim-linux-native-ecu-1           Recreated                              0.1s 
+ ✔ Container car-sim-linux-native-validation-1    Recreated                              0.1s 
+Attaching to ecu-1, infotainment-1, validation-1
+ecu-1  | [ECU] Starting D-Bus session...
+ecu-1  | [ECU] D-Bus session launched: unix:path=/tmp/dbus-rbHWwiS0fC,guid=eca5e701607c987b58bedec468afee8a
+infotainment-1  | [Infotainment] Starting D-Bus session...
+infotainment-1  | [Infotainment] D-Bus session launched: unix:path=/tmp/dbus-H7ilt5JzzQ,guid=6b848215eefd97fdeb85780968afee8a
+validation-1    | 
+validation-1    | ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+validation-1    | ┃        🚗  MERCEDES VALIDATOR LAUNCH       ┃
+validation-1    | ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+validation-1    | 
+validation-1    | [Validator] Waiting for /tmp/dbus.engine.address...
+validation-1    | 
+validation-1    | ✅ Found /tmp/dbus.engine.address
+validation-1    | [Validator] Waiting for /tmp/dbus.infotainment.address...
+validation-1    | 
+validation-1    | ✅ Found /tmp/dbus.infotainment.address
+validation-1    | [Validator] Using D-Bus addresses:
+validation-1    | Engine:      unix:path=/tmp/dbus-rbHWwiS0fC,guid=eca5e701607c987b58bedec468afee8a
+validation-1    | Infotainment: unix:path=/tmp/dbus-H7ilt5JzzQ,guid=6b848215eefd97fdeb85780968afee8a
+validation-1    | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+validation-1    | Starting Validator Service...
+validation-1    | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+validation-1    | 
+validation-1    | === [com.mercedes.engine] State: OFF ===
+validation-1    | Parameter           Value     Unit      Status    
+validation-1    | --------------------------------------------------
+validation-1    | Rpm                 0         rpm                 
+validation-1    | Speed               0         km/h                
+validation-1    | Coolant Temp        0         °C                  
+validation-1    | Oil Pressure        0.0       bar       ⚠️        
+validation-1    | Throttle Position   0.0       %                   
+validation-1    | Fuel Level          0.0       %         ⚠️        
+validation-1    | Battery Voltage     0.0       V         ⚠️        
+validation-1    | 
+validation-1    | === [com.mercedes.infotainment] State: OFF ===
+validation-1    | Parameter           Value     Unit      Status    
+validation-1    | --------------------------------------------------
+validation-1    | Volume Level        0         %                   
+validation-1    | Current Track Id    0         id                  
+validation-1    | Bluetooth Connected 0         bool                
 ...
 ```
 
