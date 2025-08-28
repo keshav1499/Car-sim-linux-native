@@ -31,24 +31,42 @@ This project reflects modern **service-oriented automotive software architecture
 
 ```
 car-sim/
+├── docker-bake.hcl
 ├── docker-compose.yml
-├── shared/                         # Shared D-Bus config
-│   |── dbus-session.conf
-|   |── __init__.py
-|   |── signal_definitions.py
-|   └── DTC_definitions.py
-├── docker-tmp/                     # Shared /tmp volume for dbus.sock
-├── ecu/
-│   ├── ecu.py                      # ECU simulator
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── ecu_entrypoint.sh
-├── validation/
-│   ├── validation.py               # Validator service
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── validator_entrypoint.sh
-└── README.md
+├── docker-tmp
+│   ├── dbus.engine.address
+│   ├── dbus.infotainment.address
+├── ecu
+│   ├── Dockerfile
+│   ├── ecu_entrypoint.sh
+│   ├── ecu.py
+│   └── requirements.txt
+├── infotainment
+│   ├── Dockerfile
+│   ├── infotainment_entrypoint.sh
+│   ├── infotainment.py
+│   └── requirements.txt
+├── LICENSE
+├── README.md
+├── shared
+│   ├── dbus-session.conf
+│   ├── DTC_definitions
+│   │   ├── engine_dtcs.py
+│   │   ├── infotainment_dtcs.py
+│   │   └── __init__.py
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   └── signal_definitions.cpython-39.pyc
+│   └── signal_definitions
+│       ├── engine_signals.py
+│       ├── infotainment_signals.py
+│       └── __init__.py
+└── validation
+    ├── Dockerfile
+    ├── requirements.txt
+    ├── validation.py
+    ├── validation.py.save
+    └── validator_entrypoint.sh
 ```
 
 ---
