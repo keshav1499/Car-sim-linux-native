@@ -7,7 +7,6 @@ from enum import Enum
 import asyncio
 import random
 
-
 # -------------------- Engine State Enumeration --------------------
 # Represents the state machine for engine simulation.
 class EngineState(Enum):
@@ -71,7 +70,8 @@ class EngineInterface(ServiceInterface):
                 if self.state_timer > 4:
                     self.state_timer = 0
                     self.engine_state = EngineState.CRANKING
-
+                    #Battery State = Discharging
+                    
             # State: Cranking - low rpm, preparing to start
             elif self.engine_state == EngineState.CRANKING:
                 data['rpm'] = random.randint(200, 500)
@@ -79,6 +79,7 @@ class EngineInterface(ServiceInterface):
                 if self.state_timer > 4:
                     self.state_timer = 0
                     self.engine_state = EngineState.RUNNING
+                   #Battery State= High amp draw
 
             # State: Running - normal engine operation
             elif self.engine_state == EngineState.RUNNING:
@@ -93,6 +94,8 @@ class EngineInterface(ServiceInterface):
                 self.check_dtcs(data)
                 if 'P0217' in self.active_dtcs:  # Overheat condition
                     self.engine_state = EngineState.FAULT
+                #if Battery_Amp_Draw, Battery state = charging
+                #else trigger DTC Alternattor error
 
             # State: Fault - engine failure mode, enters shutdown soon
             elif self.engine_state == EngineState.FAULT:

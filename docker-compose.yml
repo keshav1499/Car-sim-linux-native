@@ -12,6 +12,17 @@ services:
       - ./shared:/shared:Z
     command: ["/app/ecu_entrypoint.sh"]
 
+  infotainment:
+    image: car-sim-linux-native-infotainment
+    build:
+      context: .
+      dockerfile: infotainment/Dockerfile
+    user: root
+    volumes:
+      - ./docker-tmp:/tmp:rw,z
+      - ./shared:/shared:Z
+    command: ["/app/infotainment_entrypoint.sh"]  
+
   validation:
     image: car-sim-linux-native-validation
     build:
@@ -23,5 +34,6 @@ services:
       - ./shared:/shared:Z
     depends_on:
       - ecu
+      - infotainment
     command: ["/app/validator_entrypoint.sh"]
 
