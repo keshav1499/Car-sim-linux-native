@@ -8,19 +8,19 @@ This project reflects modern **service-oriented automotive software architecture
 ---
 
 📦 Features
-🧠 Simulated Engine ECU with realistic, random automotive telemetry:
+-🧠 Simulated Engine ECU with realistic, random automotive telemetry:
 RPM, Speed, Coolant Temp, Oil Pressure, Throttle Position
 
-🎵 Simulated Infotainment ECU providing media-related telemetry:
+-🎵 Simulated Infotainment ECU providing media-related telemetry:
 Volume Level, Current Track ID, Bluetooth Connection Status, and diagnostic trouble codes related to Bluetooth, speaker, and media decoder errors
 
-🔁 D-Bus-based inter-process communication
+-🔁 D-Bus-based inter-process communication
 
-🧪 Validation service that fetches ECU and Infotainment values at regular intervals
+-🧪 Validation service that fetches ECU and Infotainment values at regular intervals
 
-🐳 Docker-native environment using docker-compose
+-🐳 Docker-native environment using docker-compose
 
-🛠️ Cross-platform but optimized for Linux native development (not WSL)
+-🛠️ Cross-platform but optimized for Linux native development (not WSL)
 
 ## 🧰 Requirements
 
