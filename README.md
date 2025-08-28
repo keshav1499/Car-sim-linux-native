@@ -7,7 +7,7 @@ This project reflects modern **service-oriented automotive software architecture
 
 ---
 
-📦 Features
+## 📦 Features
 
 -🧠 Simulated Engine ECU with realistic, random automotive telemetry:
 RPM, Speed, Coolant Temp, Oil Pressure, Throttle Position
