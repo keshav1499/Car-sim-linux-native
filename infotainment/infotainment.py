@@ -74,7 +74,7 @@ class InfotainmentInterface(ServiceInterface):
                     self.state = InfotainmentState.IDLE
 
             elif self.state == InfotainmentState.IDLE:
-                data['volume_level'] = 10
+                data['volume_level'] = 15
                 data['current_track_id'] = 0
                 data['bluetooth_connected'] = 1
                 self.state_timer += 1
@@ -83,8 +83,8 @@ class InfotainmentInterface(ServiceInterface):
                     self.state = InfotainmentState.PLAYING
 
             elif self.state == InfotainmentState.PLAYING:
-                data['volume_level'] = random.randint(5, 90)
-                data['current_track_id'] = random.randint(1, 200)
+                data['volume_level'] = random.randint(5, 80)
+                data['current_track_id'] = random.randint(1, 250)
                 data['bluetooth_connected'] = 1  # Connected
                 # Randomly create error scenarios for DTC triggers
                 roll = random.random()
@@ -133,6 +133,7 @@ class InfotainmentInterface(ServiceInterface):
             await asyncio.sleep(0.5)
 
     # -------------------- DBus Methods, names compatible with validation --------------------
+#validation should get compatible function calls, ensure the below method calls are compatible
     @method()
     def get_engine_state(self) -> 's':
         # "engine_state" method required by validation.py for all ECUs
