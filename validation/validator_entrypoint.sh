@@ -51,3 +51,4 @@ echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━�
 
 # Run Python in unbuffered mode
 exec python3 -u validation.py #--verbose
+#Remove the commented out verbose part to enable verbose logging 📃📃
