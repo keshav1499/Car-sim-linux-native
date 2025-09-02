@@ -73,6 +73,7 @@ class InfotainmentInterface(ServiceInterface):
                     self.state_timer = 0
                     self.state = InfotainmentState.IDLE
 
+#Idle state logic
             elif self.state == InfotainmentState.IDLE:
                 data['volume_level'] = 15
                 data['current_track_id'] = 0
