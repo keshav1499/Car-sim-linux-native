@@ -80,8 +80,8 @@ car-sim/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/car-sim.git
-cd car-sim
+git clone https://github.com/keshav1499/Car-sim-linux-native.git
+cd Car-sim-linux-native
 ```
 
 ### 2. Ensure shared directories exist
